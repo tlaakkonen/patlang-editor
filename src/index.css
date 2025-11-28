@@ -1,0 +1,124 @@
+:root{
+	--sidebar-width: 280px;
+	--gap: 12px;
+	--bg: #0f1720;
+}
+
+html,body,#root{
+	height:100%;
+	margin:0;
+}
+
+.app-layout{
+	display:flex;
+	height:100vh;
+	gap: var(--gap);
+	box-sizing:border-box;
+}
+
+.sidebar{
+	width:var(--sidebar-width);
+	border-right:1px solid #e6e6e6;
+	background:#fafafa;
+	overflow:auto;
+}
+
+.sidebar-inner{
+	padding:12px;
+}
+
+.palette-section{
+	margin-bottom:16px;
+}
+
+.palette-title{
+	margin:0 0 8px 0;
+	font-size:14px;
+	color:#333;
+}
+
+.palette-items{
+	display:flex;
+	flex-direction:column;
+	gap:8px;
+}
+
+.palette-item{
+	background: #fff;
+	border: 1px solid #ddd;
+	padding:8px 10px;
+	border-radius:6px;
+	cursor:grab;
+	user-select:none;
+}
+
+.palette-item:active{ cursor:grabbing }
+
+.canvas{
+	flex:1;
+	background: #fff;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+}
+
+.canvas-placeholder{
+	text-align:center;
+	color:#666;
+}
+
+.canvas-empty{
+	font-weight:600;
+	margin-bottom:8px;
+}
+
+.canvas-hint{
+	font-size:13px;
+}
+
+/* Custom node styles for react-flow nodes */
+.custom-node {
+	background: var(--node-bg, #ddd);
+	border-radius: 8px;
+	padding: 8px 12px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+	color: #111;
+	font-family: "Roboto","Helvetica","Arial",sans-serif;
+	font-weight: 400;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.custom-node-label{
+	pointer-events: none; /* label shouldn't intercept pointer events */
+	text-align: center;
+	width: 100%;
+}
+
+/* Handles shared styles */
+.custom-handle {
+	width: 10px;
+	height: 10px;
+	border-radius: 10px;
+	background: #222;
+	transform: translate(-50%, -50%);
+}
+
+.custom-handle.custom-handle-right {
+	transform: translate(50%, -50%);
+}
+
+/* Make selected react-flow custom nodes more visible with a thicker outline */
+.react-flow__node.selected {
+	/* use an outline so layout doesn't shift; choose a clear accent color */
+	outline: 1px solid black !important; /* blue-500 */
+	outline-offset: 0;
+	border-radius: 8px; /* match node rounding */
+}
+
+textarea {
+  font-family: monospace !important;
+}
+
