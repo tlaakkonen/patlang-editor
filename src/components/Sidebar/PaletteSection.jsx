@@ -17,7 +17,7 @@ import AddEquationDialog from './AddEquationDialog'
 
 export default function PaletteSection({ title, items = [], sectionKey }) {
   const [open, setOpen] = React.useState(true)
-  const { sections, setSections } = usePalette()
+  const { setSections } = usePalette()
   // dialog open state (local to this section)
   const [dialogOpen, setDialogOpen] = React.useState(false)
   const [editingItem, setEditingItem] = React.useState(null)

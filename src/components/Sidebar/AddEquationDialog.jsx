@@ -9,13 +9,17 @@ import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import { usePalette } from '../../state/PaletteContext'
+import { analyzeOutputNodes, nodesHaveMissingInputConnections } from '../../utils/validation'
 
 // Dialog for creating/editing an equation palette item.
 // Each equation item will have: 'type', 'label', 'lhs-type', 'rhs-type'.
 // For now this dialog only edits the label; lhs/rhs types are left null by default.
 export default function AddEquationDialog({ open, onClose, sectionKey, initialItem = null }) {
   const { sections, findItemByType } = usePalette()
-  const diagrams = (sections || []).find((s) => s.key === 'diagrams')?.items || []
+  const diagrams = React.useMemo(
+    () => (sections || []).find((s) => s.key === 'diagrams')?.items || [],
+    [sections]
+  )
 
   const [label, setLabel] = React.useState('New Equation')
   const [lhsType, setLhsType] = React.useState(initialItem?.['lhs-type'] ?? '')
@@ -76,25 +80,10 @@ export default function AddEquationDialog({ open, onClose, sectionKey, initialIt
     const lhsEdges = lhs.edges || []
     const rhsEdges = rhs.edges || []
 
-    // helper: compute output node types set and check at-most-one per type for output-kind nodes
-    function analyze(nodesArr) {
-      const outputTypeCounts = {}
-      const outputNodeInstances = [] // nodes that are of output kind
-      for (const node of nodesArr) {
-        const t = node.data?.type
-        const box = findItemByType ? findItemByType('boxes', t) : null
-        const kind = box?.kind
-        if (kind === 'output') {
-          outputTypeCounts[t] = (outputTypeCounts[t] || 0) + 1
-          outputNodeInstances.push({ node, type: t, box })
-        }
-      }
-      const outputTypes = new Set(Object.keys(outputTypeCounts))
-      return { outputTypeCounts, outputNodeInstances, outputTypes }
-    }
+    // use shared helper to compute output node types and instances
 
-    const lhsAnalysis = analyze(lhsNodes)
-    const rhsAnalysis = analyze(rhsNodes)
+  const lhsAnalysis = analyzeOutputNodes(lhsNodes, findItemByType)
+  const rhsAnalysis = analyzeOutputNodes(rhsNodes, findItemByType)
 
     // Rule 1: at most one of each output node type in each diagram
     const lhsHasDuplicates = Object.values(lhsAnalysis.outputTypeCounts).some((c) => c > 1)
@@ -113,28 +102,11 @@ export default function AddEquationDialog({ open, onClose, sectionKey, initialIt
     }
 
     // Rule 3: for each output node instance, for every input handle index, there must be an edge whose target is that handle
-    // Rule 3: ensure every output node instance has at least one edge for each of its input handles
-    let missingConnection = false
-    function checkEdges(nodesArr, edgesArr) {
-      for (const inst of nodesArr) {
-        const node = inst.node
-        const t = inst.type
-        const palette = inst.box || (findItemByType ? findItemByType('boxes', t) : null)
-        const inputsArr = node.data?.inputs ?? palette?.inputs ?? []
-        for (let i = 0; i < inputsArr.length; i++) {
-          const targetHandleId = `in-${i}`
-          const hasEdge = edgesArr.some((e) => e.target === node.id && e.targetHandle === targetHandleId)
-          if (!hasEdge) {
-            missingConnection = true
-            return
-          }
-        }
-      }
+    const lhsMissing = nodesHaveMissingInputConnections(lhsAnalysis.outputNodeInstances, lhsEdges)
+    const rhsMissing = nodesHaveMissingInputConnections(rhsAnalysis.outputNodeInstances, rhsEdges)
+    if (lhsMissing || rhsMissing) {
+      errs.push('An output node is missing a connection to its input')
     }
-
-    checkEdges(lhsAnalysis.outputNodeInstances, lhsEdges)
-    if (!missingConnection) checkEdges(rhsAnalysis.outputNodeInstances, rhsEdges)
-    if (missingConnection) errs.push('An output node is missing a connection to its input')
 
     setValidationErrors(errs)
   }, [lhsType, rhsType, diagrams, findItemByType])

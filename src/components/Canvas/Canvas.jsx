@@ -6,7 +6,7 @@ import { usePalette } from '../../state/PaletteContext'
 
 const nodeTypes = { custom: CustomNode };
 
-export default function CanvasPlaceholder() {
+export default function Canvas() {
     const reactFlowWrapper = useRef(null)
     const reactFlowInstance = useRef(null)
     const idCounter = useRef(10)
@@ -74,7 +74,7 @@ export default function CanvasPlaceholder() {
 
             setEdges((edgesSnapshot) => addEdge({ ...params, style: { stroke: wireColor, strokeWidth: 3 } }, edgesSnapshot))
         },
-        [nodes, findItemByType, edges],
+        [nodes, findItemByType, edges, setEdges],
     );
 
     // update connection preview color when a connection is started
@@ -120,7 +120,6 @@ export default function CanvasPlaceholder() {
         event.preventDefault()
         if (!reactFlowWrapper.current || !reactFlowInstance.current) return
 
-        const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
         const type = event.dataTransfer.getData('application/x-node-type')
         if (!type) return
 

@@ -3,7 +3,7 @@ import { Handle, Position } from '@xyflow/react'
 import { usePalette } from '../../state/PaletteContext'
 
 // data: { label, type, color, inputs:[], outputs:[] }
-export default function CustomNode({ id, data }) {
+export default function CustomNode({ data }) {
     const { findItemByType } = usePalette()
     const { label, color, inputs, outputs, type } = data || {}
 

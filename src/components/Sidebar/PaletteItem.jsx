@@ -10,7 +10,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import { usePalette } from '../../state/PaletteContext'
 
 export default function PaletteItem({ item, sectionKey, onEdit }) {
-  const { sections, setSections, nodes, edges, setNodes, setEdges } = usePalette()
+  const { setSections, nodes, edges, setNodes, setEdges } = usePalette()
   const isOpened = sectionKey === 'diagrams' && !!item.opened
 
   function onDelete(e) {

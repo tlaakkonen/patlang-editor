@@ -4,13 +4,20 @@ import TopMenu from './TopMenu'
 
 export default function Layout({ sidebar, children }) {
   return (
-    <Box sx={{ position: 'relative' }}>
-      {/* top-right menu */}
-      <Box sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1200 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: 'background.default' }}>
+      <Box
+        component="header"
+        sx={{
+          flexShrink: 0,
+          borderBottom: 1,
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+        }}
+      >
         <TopMenu />
       </Box>
 
-      <Box sx={{ display: 'flex', height: '100vh' }}>
+      <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
         <Box
           component="aside"
           sx={{
@@ -23,7 +30,10 @@ export default function Layout({ sidebar, children }) {
         >
           {sidebar}
         </Box>
-        <Box component="main" sx={{ flex: 1, p: 2, bgcolor: 'background.default' }}>
+        <Box
+          component="main"
+          sx={{ flex: 1, p: 2, bgcolor: 'background.default', overflow: 'hidden' }}
+        >
           {children}
         </Box>
       </Box>

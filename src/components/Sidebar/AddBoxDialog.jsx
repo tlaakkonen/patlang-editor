@@ -98,18 +98,16 @@ export default function AddBoxDialog({ open, onClose, sectionKey, initialItem = 
     const t = e.dataTransfer.getData('application/x-wire-type')
     const reorder = e.dataTransfer.getData('application/x-wire-reorder')
     if (reorder) {
-      try {
-        const { side, index } = JSON.parse(reorder)
-        if (side === 'inputs') {
-          // reorder within inputs to end
-          setInputs((prev) => {
-            const next = [...prev]
-            const [moved] = next.splice(index, 1)
-            next.push(moved)
-            return next
-          })
-        }
-      } catch (err) {}
+      const { side, index } = JSON.parse(reorder)
+      if (side === 'inputs') {
+        // reorder within inputs to end
+        setInputs((prev) => {
+          const next = [...prev]
+          const [moved] = next.splice(index, 1)
+          next.push(moved)
+          return next
+        })
+      }
     } else if (t) setInputs((prev) => [...prev, t])
     setDragOverInputs(false)
   }
@@ -119,18 +117,16 @@ export default function AddBoxDialog({ open, onClose, sectionKey, initialItem = 
     const t = e.dataTransfer.getData('application/x-wire-type')
     const reorder = e.dataTransfer.getData('application/x-wire-reorder')
     if (reorder) {
-      try {
-        const { side, index } = JSON.parse(reorder)
-        if (side === 'outputs') {
-          // reorder within outputs to end
-          setOutputs((prev) => {
-            const next = [...prev]
-            const [moved] = next.splice(index, 1)
-            next.push(moved)
-            return next
-          })
-        }
-      } catch (err) {}
+      const { side, index } = JSON.parse(reorder)
+      if (side === 'outputs') {
+        // reorder within outputs to end
+        setOutputs((prev) => {
+          const next = [...prev]
+          const [moved] = next.splice(index, 1)
+          next.push(moved)
+          return next
+        })
+      }
     } else if (t) setOutputs((prev) => [...prev, t])
     setDragOverOutputs(false)
   }
@@ -148,32 +144,30 @@ export default function AddBoxDialog({ open, onClose, sectionKey, initialItem = 
     const reorder = e.dataTransfer.getData('application/x-wire-reorder')
     const t = e.dataTransfer.getData('application/x-wire-type')
     if (reorder) {
-      try {
-        const { side: srcSide, index: srcIndex } = JSON.parse(reorder)
-        // same side reordering
-        if (srcSide === targetSide) {
-          if (srcSide === 'inputs') {
-            setInputs((prev) => {
-              const next = [...prev]
-              const [moved] = next.splice(srcIndex, 1)
-              let insertAt = targetIndex
-              // if removing earlier index shifts target
-              if (srcIndex < targetIndex) insertAt--
-              next.splice(insertAt, 0, moved)
-              return next
-            })
-          } else {
-            setOutputs((prev) => {
-              const next = [...prev]
-              const [moved] = next.splice(srcIndex, 1)
-              let insertAt = targetIndex
-              if (srcIndex < targetIndex) insertAt--
-              next.splice(insertAt, 0, moved)
-              return next
-            })
-          }
+      const { side: srcSide, index: srcIndex } = JSON.parse(reorder)
+      // same side reordering
+      if (srcSide === targetSide) {
+        if (srcSide === 'inputs') {
+          setInputs((prev) => {
+            const next = [...prev]
+            const [moved] = next.splice(srcIndex, 1)
+            let insertAt = targetIndex
+            // if removing earlier index shifts target
+            if (srcIndex < targetIndex) insertAt--
+            next.splice(insertAt, 0, moved)
+            return next
+          })
+        } else {
+          setOutputs((prev) => {
+            const next = [...prev]
+            const [moved] = next.splice(srcIndex, 1)
+            let insertAt = targetIndex
+            if (srcIndex < targetIndex) insertAt--
+            next.splice(insertAt, 0, moved)
+            return next
+          })
         }
-      } catch (err) {}
+      }
     } else if (t) {
       // palette drop onto a specific position
       if (targetSide === 'inputs') {

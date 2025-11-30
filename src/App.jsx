@@ -1,6 +1,6 @@
 import Layout from './components/Layout/Layout.jsx'
 import Sidebar from './components/Sidebar/Sidebar.jsx'
-import CanvasPlaceholder from './components/Canvas/CanvasPlaceholder.jsx'
+import Canvas from './components/Canvas/Canvas.jsx'
 import { PaletteProvider } from './state/PaletteContext'
 
 const DEFAULT_SECTIONS = [
@@ -32,7 +32,7 @@ export default function App() {
   return (
     <PaletteProvider initialSections={DEFAULT_SECTIONS}>
       <Layout sidebar={<Sidebar />}>
-        <CanvasPlaceholder />
+        <Canvas />
       </Layout>
     </PaletteProvider>
   )

@@ -12,14 +12,14 @@ export function PaletteProvider({ children, initialSections }) {
       if (!raw) return null
       const parsed = JSON.parse(raw)
       return parsed?.data || parsed
-    } catch (err) {
+    } catch {
       return null
     }
   }
 
   const persisted = typeof window !== 'undefined' ? loadPersisted() : null
 
-  const [sections, setSections] = useState(persisted?.sections ?? initialSections ?? DEFAULT_SECTIONS)
+  const [sections, setSections] = useState(persisted?.sections ?? initialSections)
   // expose nodes so other components (dialogs) can know what nodes exist on the canvas
   const [nodes, setNodes] = useState(persisted?.nodes ?? [])
   // also keep edges in the shared context so canvas state can be saved/loaded per-diagram
@@ -34,7 +34,7 @@ export function PaletteProvider({ children, initialSections }) {
       try {
         const payload = { v: 1, data: { sections, nodes, edges }, updatedAt: Date.now() }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
-      } catch (err) {
+      } catch {
         // ignore quota or serialization errors
       }
     }, 500)
@@ -72,6 +72,7 @@ export function PaletteProvider({ children, initialSections }) {
   return <PaletteContext.Provider value={value}>{children}</PaletteContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function usePalette() {
   const ctx = useContext(PaletteContext)
   if (!ctx) throw new Error('usePalette must be used within PaletteProvider')
