@@ -1,7 +1,37 @@
 :root{
+	/* Layout */
 	--sidebar-width: 280px;
 	--gap: 12px;
-	--bg: #0f1720;
+
+	/* Light theme (defaults) */
+	--bg: #f5f7fa; /* app background */
+	--panel-bg: #ffffff; /* panels, cards */
+	--sidebar-bg: #fafafa;
+	--text: #111827;
+	--muted: #6b7280;
+	--border: #e6e6e6;
+	--node-bg: #e6e6e6;
+	--node-text: #111;
+	--handle-bg: #222;
+	--accent: #1f6feb;
+	--danger: #dc2626;
+	--warning: #f59e0b;
+}
+
+/* Dark theme: applied by adding .dark to the <html> element */
+html.dark {
+	--bg: #0b1220;
+	--panel-bg: #0f1724;
+	--sidebar-bg: #071023;
+	--text: #e5e7eb;
+	--muted: #9ca3af;
+	--border: #1f2937;
+	--node-bg: #111827;
+	--node-text: #e5e7eb;
+	--handle-bg: #9ca3af;
+	--accent: #60a5fa;
+	--danger: #f87171;
+	--warning: #fbbf24;
 }
 
 html,body,#root{
@@ -18,8 +48,8 @@ html,body,#root{
 
 .sidebar{
 	width:var(--sidebar-width);
-	border-right:1px solid #e6e6e6;
-	background:#fafafa;
+	border-right:1px solid var(--border);
+	background:var(--sidebar-bg);
 	overflow:auto;
 }
 
@@ -34,7 +64,7 @@ html,body,#root{
 .palette-title{
 	margin:0 0 8px 0;
 	font-size:14px;
-	color:#333;
+	color:var(--text);
 }
 
 .palette-items{
@@ -44,27 +74,29 @@ html,body,#root{
 }
 
 .palette-item{
-	background: #fff;
-	border: 1px solid #ddd;
+	background: var(--panel-bg);
+	border: 1px solid var(--border);
 	padding:8px 10px;
 	border-radius:6px;
 	cursor:grab;
 	user-select:none;
+	color: var(--text);
 }
 
 .palette-item:active{ cursor:grabbing }
 
 .canvas{
 	flex:1;
-	background: #fff;
+	background: var(--panel-bg);
 	display:flex;
 	align-items:center;
 	justify-content:center;
+	color: var(--text);
 }
 
 .canvas-placeholder{
 	text-align:center;
-	color:#666;
+	color:var(--muted);
 }
 
 .canvas-empty{
@@ -78,11 +110,11 @@ html,body,#root{
 
 /* Custom node styles for react-flow nodes */
 .custom-node {
-	background: var(--node-bg, #ddd);
+	background: var(--node-bg);
 	border-radius: 8px;
 	padding: 8px 12px;
 	box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-	color: #111;
+	color: var(--node-text);
 	font-family: "Roboto","Helvetica","Arial",sans-serif;
 	font-weight: 400;
 	position: relative;
@@ -102,7 +134,7 @@ html,body,#root{
 	width: 10px;
 	height: 10px;
 	border-radius: 10px;
-	background: #222;
+	background: var(--handle-bg);
 	transform: translate(-50%, -50%);
 }
 
@@ -113,12 +145,67 @@ html,body,#root{
 /* Make selected react-flow custom nodes more visible with a thicker outline */
 .react-flow__node.selected {
 	/* use an outline so layout doesn't shift; choose a clear accent color */
-	outline: 1px solid black !important; /* blue-500 */
+	outline: 1px solid var(--accent) !important;
 	outline-offset: 0;
 	border-radius: 8px; /* match node rounding */
 }
 
 textarea {
   font-family: monospace !important;
+}
+
+/* Global app backgrounds and typography */
+html,body,#root{
+	background: var(--bg);
+	color: var(--text);
+}
+
+/* MUI overrides removed — theming is handled via ThemeProvider and CSS variables.
+   Keeping custom react-flow and app styles above. */
+
+/* make inputs/textarea text visible in dark */
+input, textarea, select {
+	color: var(--text);
+	background: transparent;
+}
+
+/* React Flow controls and attribution (logo) theming */
+.react-flow__controls {
+	background: var(--panel-bg);
+	border: 1px solid var(--border);
+	color: var(--text);
+	border-radius: 8px;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+	padding: 4px;
+}
+
+.react-flow__controls button,
+.react-flow__controls .react-flow__controls-button {
+	background: transparent;
+	border: none;
+	color: var(--text);
+	min-width: 34px;
+	height: 34px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.react-flow__controls button svg,
+.react-flow__controls .react-flow__controls-button svg {
+	color: var(--text);
+	fill: currentColor;
+}
+
+/* attribution / logo text */
+.react-flow__attribution {
+	color: var(--muted) !important;
+	background: var(--bg) !important;
+	box-shadow: none;
+}
+
+/* background grid lines (if present) should be subtle in dark mode */
+.react-flow__background {
+	opacity: 0.6;
 }
 

@@ -3,15 +3,20 @@ import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Switch from '@mui/material/Switch'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import SaveIcon from '@mui/icons-material/Save'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import DeleteIcon from '@mui/icons-material/Delete'
 import CodeIcon from '@mui/icons-material/Code'
+import BoltIcon from '@mui/icons-material/Bolt'
 import SaveDialog from './SaveDialog'
 import LoadDialog from './LoadDialog'
 import ClearDialog from './ClearDialog'
 import GenerateCodeDialog from './GenerateCodeDialog'
+import TrainLiveDialog from './TrainLiveDialog'
 import { usePalette } from '../../state/PaletteContext'
+import { useThemeContext } from '../../state/ThemeContext'
 
 export default function TopMenu() {
   const { sections, setSections, nodes, setNodes, edges, setEdges } = usePalette()
@@ -19,6 +24,8 @@ export default function TopMenu() {
   const [clearOpen, setClearOpen] = React.useState(false)
   const [loadOpen, setLoadOpen] = React.useState(false)
   const [generateOpen, setGenerateOpen] = React.useState(false)
+  const [trainOpen, setTrainOpen] = React.useState(false)
+  const { darkMode, setDarkMode } = useThemeContext()
 
   function handleSave() {
     setSaveOpen(true)
@@ -37,8 +44,16 @@ export default function TopMenu() {
     setGenerateOpen(true)
   }
 
+  function handleTrain() {
+    setTrainOpen(true)
+  }
+
   function closeGenerateDialog() {
     setGenerateOpen(false)
+  }
+
+  function closeTrainDialog() {
+    setTrainOpen(false)
   }
 
   function openClearDialog() {
@@ -68,7 +83,25 @@ export default function TopMenu() {
       >
         <Box sx={{ width: '100%', mx: 'auto' }}>
           <Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Stack direction="row" spacing={1.5}>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Button
+                size="small"
+                variant="outlined"
+                color="info"
+                onClick={() => setDarkMode(!darkMode)}
+                aria-pressed={darkMode}
+                sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}
+              >
+                <Switch
+                  size="small"
+                  checked={darkMode}
+                  onChange={(e) => setDarkMode(e.target.checked)}
+                  onClick={(e) => e.stopPropagation()}
+                  inputProps={{ 'aria-label': 'dark mode' }}
+                />
+                Dark Mode
+              </Button>
+
               <Button size="small" variant="outlined" startIcon={<SaveIcon />} onClick={handleSave}>
                 Save
               </Button>
@@ -87,6 +120,15 @@ export default function TopMenu() {
               <Button size="small" variant="contained" startIcon={<CodeIcon />} onClick={handleGenerate}>
                 Generate Code
               </Button>
+              <Button
+                size="small"
+                variant="contained"
+                color="warning"
+                startIcon={<BoltIcon />}
+                onClick={handleTrain}
+              >
+                Train in Browser
+              </Button>
             </Stack>
           </Stack>
         </Box>
@@ -101,6 +143,8 @@ export default function TopMenu() {
       />
 
       <GenerateCodeDialog open={generateOpen} onClose={closeGenerateDialog} />
+
+  <TrainLiveDialog open={trainOpen} onClose={closeTrainDialog} />
 
       <LoadDialog
         open={loadOpen}
