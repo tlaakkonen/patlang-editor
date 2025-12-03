@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, Controls, Background } from '@xyflow/react';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, Controls, ControlButton, Background } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import CustomNode from './CustomNode';
 import { usePalette } from '../../state/PaletteContext'
+import { isMobile, isIOS } from 'react-device-detect'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 const nodeTypes = { custom: CustomNode };
 
@@ -12,6 +14,8 @@ export default function Canvas() {
     const idCounter = useRef(10)
 
     const { findItemByType, nodes, setNodes, edges, setEdges, setSections } = usePalette()
+    const [selectedNodes, setSelectedNodes] = useState([])
+    const [selectedEdges, setSelectedEdges] = useState([])
     
     const onNodesChange = useCallback(
         (changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
@@ -179,7 +183,7 @@ export default function Canvas() {
     }, [nodes, edges, setSections])
 
     return (
-        <div ref={reactFlowWrapper} style={{ width: '100%', height: '100%' }} onDragOver={onDragOver} onDrop={onDrop}>
+        <div ref={reactFlowWrapper} style={{ width: '100%', height: '100%', position: 'relative' }} onDragOver={onDragOver} onDrop={onDrop}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -190,13 +194,39 @@ export default function Canvas() {
                 connectionLineStyle={connectionLineStyle}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
+                onSelectionChange={({ nodes: selNodes, edges: selEdges }) => {
+                    setSelectedNodes(selNodes || [])
+                    setSelectedEdges(selEdges || [])
+                }}
                 onConnect={onConnect}
                 fitView
-                panOnScroll={true}
-                selectionOnDrag={true}
-                panOnDrag={false}
+                panOnScroll={!isMobile}
+                selectionOnDrag={!isMobile}
+                panOnDrag={isMobile}
             >
-                <Controls />
+                    <Controls>
+                        {(isMobile || isIOS) && (
+                            <ControlButton
+                                onClick={() => {
+                                    if (!(selectedNodes.length > 0 || selectedEdges.length > 0)) return
+                                    const nodeIds = (selectedNodes || []).map((n) => n.id)
+                                    const edgeIds = (selectedEdges || []).map((e) => e.id)
+                                    if (nodeIds.length > 0) {
+                                        setNodes((nds) => nds.filter((n) => !nodeIds.includes(n.id)))
+                                    }
+                                    if (edgeIds.length > 0) {
+                                        setEdges((eds) => eds.filter((e) => !edgeIds.includes(e.id)))
+                                    }
+                                    setSelectedNodes([])
+                                    setSelectedEdges([])
+                                }}
+                                title={(selectedNodes.length > 0 || selectedEdges.length > 0) ? 'Delete selected' : 'Select an item to delete'}
+                                disabled={!(selectedNodes.length > 0 || selectedEdges.length > 0)}
+                            >
+                                <DeleteIcon className="delete-button"/>
+                            </ControlButton>
+                        )}
+                    </Controls>
                 <Background />
             </ReactFlow>
         </div>

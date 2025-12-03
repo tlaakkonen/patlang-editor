@@ -10,9 +10,6 @@ export default function WizardStepper({ steps, activeStep, onBack, onNext, onClo
   return (
     <>
       <DialogActions sx={{ alignItems: 'center' }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Box sx={{ flex: 1 }} />
-
         <Box sx={{ display: 'flex', alignItems: 'center', ml: 2, mr: 2 }}>
           <Stepper activeStep={activeStep} sx={{ minWidth: 220 }}>
             {steps.map((label) => (

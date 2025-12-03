@@ -87,17 +87,17 @@ export default function TopMenu() {
               <Button
                 size="small"
                 variant="outlined"
-                color="info"
+                color="primary"
                 onClick={() => setDarkMode(!darkMode)}
                 aria-pressed={darkMode}
                 sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}
               >
                 <Switch
                   size="small"
+                  color="primary"
                   checked={darkMode}
                   onChange={(e) => setDarkMode(e.target.checked)}
                   onClick={(e) => e.stopPropagation()}
-                  inputProps={{ 'aria-label': 'dark mode' }}
                 />
                 Dark Mode
               </Button>

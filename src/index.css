@@ -209,3 +209,7 @@ input, textarea, select {
 	opacity: 0.6;
 }
 
+.delete-button {
+	color: var(--danger) !important;
+}
+
