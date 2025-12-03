@@ -54,7 +54,7 @@ export default function EquationsStep({ value = {}, onChange, oneHot = {}, learn
         <Alert severity="error">No equations found in the palette. Add equations in the sidebar to continue.</Alert>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {equations.map((eq, i) => {
+          {equations.map((eq) => {
             // find diagram and box sections and compute available learner types
             const diagramsSection = (sections || []).find((s) => s.key === 'diagrams')
             const boxesSection = (sections || []).find((s) => s.key === 'boxes')
@@ -162,6 +162,7 @@ export default function EquationsStep({ value = {}, onChange, oneHot = {}, learn
                     {outputNodes.map((node) => {
                       const boxDef = boxesSection?.items?.find((b) => b.type === node.data?.type) || {}
                       const inputs = boxDef.inputs || []
+                      const nodeType = boxDef.type || node.data?.type
                       return (
                         <Box key={node.id} sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1, borderRadius: 1, bgcolor: 'background.paper', border: '1px solid rgba(0,0,0,0.04)' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -181,16 +182,18 @@ export default function EquationsStep({ value = {}, onChange, oneHot = {}, learn
                           {/* list inputs for this output node */}
                           <Divider sx={{ my: 1 }} />
                           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
-                            {inputs.map((wireType) => {
+                            {inputs.map((wireType, idx) => {
                               const wireDef = wiresSection.find((w) => w.type === wireType) || {}
+                              // persist by index into the box inputs array instead of the handle string
+                              const indexKey = idx
                               // display either the persisted selection or a sensible default
-                              // default: L2, unless the wire type is one-hot -> use BCE (cross-entropy)
-                              const persisted = value?.[eq.type]?.[node.id]?.[wireType]
+                              // default: L2, unless the wire type is one-hot -> use CE (cross-entropy)
+                              const persisted = value?.[eq.type]?.[nodeType]?.[indexKey]
                               const current = persisted !== undefined && persisted !== null && persisted !== ''
                                 ? persisted
                                 : (oneHot?.[wireType] ? 'CE' : 'L2')
                               return (
-                                <Box key={wireType} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box key={indexKey} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                   <Box sx={{
                                     width: 14,
                                     height: 14,
@@ -203,24 +206,24 @@ export default function EquationsStep({ value = {}, onChange, oneHot = {}, learn
                                   <Typography variant="body2">{wireDef.label || wireDef.type}</Typography>
                                   <Box sx={{ flex: 1 }} />
                                   <FormControl size="small" sx={{ minWidth: 140 }}>
-                                    <InputLabel id={`loss-select-${eq.type}-${node.id}-${wireType}`}>Loss</InputLabel>
+                                    <InputLabel id={`loss-select-${eq.type}-${nodeType}-${indexKey}`}>Loss</InputLabel>
                                     <Select
-                                      labelId={`loss-select-${eq.type}-${node.id}-${wireType}`}
-                                      id={`loss-select-${eq.type}-${node.id}-${wireType}`}
+                                      labelId={`loss-select-${eq.type}-${nodeType}-${indexKey}`}
+                                      id={`loss-select-${eq.type}-${nodeType}-${indexKey}`}
                                       value={current}
                                       label="Loss"
                                       onChange={(e) => {
                                         const selected = e.target.value
                                         const prevEq = value?.[eq.type] || {}
-                                        const prevNode = prevEq?.[node.id] || {}
-                                        const nextNode = { ...prevNode, [wireType]: selected }
-                                        const nextEq = { ...prevEq, [node.id]: nextNode }
+                                        const prevNode = prevEq?.[nodeType] || {}
+                                        const nextNode = { ...prevNode, [indexKey]: selected }
+                                        const nextEq = { ...prevEq, [nodeType]: nextNode }
                                         const updated = { ...(value || {}), [eq.type]: nextEq }
                                         onChange?.(updated)
                                       }}
                                     >
                                       <MenuItem value="L2">L2</MenuItem>
-                                      <MenuItem value="SSIM">SSIM</MenuItem>
+                                      <MenuItem value="L1">L1</MenuItem>
                                       <MenuItem value="BCE">Binary CE</MenuItem>
                                       <MenuItem value="CE">Cross-entropy</MenuItem>
                                     </Select>

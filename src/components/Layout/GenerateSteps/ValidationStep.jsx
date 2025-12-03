@@ -52,6 +52,27 @@ export default function ValidationStep({ sections = [], findItemByType, open, on
         errs.push(`Equation "${eq?.label || eq?.type}": diagrams contain more than one of the same output box`)
       }
 
+      // Ensure each diagram contains at most one copy of each input-kind box
+      const countInputTypes = (nodesArr = []) => {
+        const inputTypeCounts = {}
+        for (const node of nodesArr || []) {
+          const t = node.data?.type
+          const box = findItemByType ? findItemByType('boxes', t) : null
+          if (box?.kind === 'input') {
+            inputTypeCounts[t] = (inputTypeCounts[t] || 0) + 1
+          }
+        }
+        return inputTypeCounts
+      }
+
+      const lhsInputCounts = countInputTypes(lhsNodes)
+      const rhsInputCounts = countInputTypes(rhsNodes)
+      const lhsInputHasDuplicates = Object.values(lhsInputCounts).some((c) => c > 1)
+      const rhsInputHasDuplicates = Object.values(rhsInputCounts).some((c) => c > 1)
+      if (lhsInputHasDuplicates || rhsInputHasDuplicates) {
+        errs.push(`Equation "${eq?.label || eq?.type}": diagrams contain more than one of the same input box`)
+      }
+
       const lhsSet = lhsAnalysis.outputTypes
       const rhsSet = rhsAnalysis.outputTypes
       // ensure each diagram contains at least one output type

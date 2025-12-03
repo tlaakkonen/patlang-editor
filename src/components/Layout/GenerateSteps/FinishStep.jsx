@@ -24,6 +24,7 @@ export default function FinishStep({ wizardState, sections }) {
     // create a deep copy of `sections` at the time of button press
     const sectionsCopy = sections ? JSON.parse(JSON.stringify(sections)) : []
     const res = generatePython(wizardState, sectionsCopy)
+    if (res === null) { return }
     // res: { content, mimeType, filename }
     downloadBlob(res.content, res.mimeType, res.filename)
   }
@@ -32,6 +33,7 @@ export default function FinishStep({ wizardState, sections }) {
     // create a deep copy of `sections` at the time of button press
     const sectionsCopy = sections ? JSON.parse(JSON.stringify(sections)) : []
     const res = generateNotebook(wizardState, sectionsCopy)
+    if (res === null) { return }
     downloadBlob(res.content, res.mimeType, res.filename)
   }
 

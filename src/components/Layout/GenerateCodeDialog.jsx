@@ -68,6 +68,73 @@ export default function GenerateCodeDialog({ open, onClose }) {
       if (!nextLearnerConfigs[b.type]) nextLearnerConfigs[b.type] = { arch: 'Linear' }
     }
 
+    // output learners: for each equation, default to all available learners
+    // (so the EquationsStep shows everything selected AND the wizardState
+    // reflects that default selection).
+    const nextOutputLearners = { ...(wizardState.outputLearners || {}) }
+    // compute available learners per equation using the same logic as
+    // EquationsStep so defaults match the UI fallback there
+    const diagramsSection = (sections || []).find((s) => s.key === 'diagrams')
+    const boxesSection = (sections || []).find((s) => s.key === 'boxes')
+    for (const eq of equations) {
+      if (!nextOutputLearners[eq.type]) {
+        const lhsDiagram = diagramsSection?.items?.find((d) => d.type === eq['lhs-type'])
+        const rhsDiagram = diagramsSection?.items?.find((d) => d.type === eq['rhs-type'])
+        const lhsNodesSet = new Set((lhsDiagram?.nodes || []).map((n) => n.data?.type))
+        const rhsNodesSet = new Set((rhsDiagram?.nodes || []).map((n) => n.data?.type))
+        const availableLearnersForEq = (boxesSection?.items || [])
+          .filter((b) => b.kind === 'learner' && (lhsNodesSet.has(b.type) || rhsNodesSet.has(b.type)))
+          .map((b) => b.type)
+        nextOutputLearners[eq.type] = availableLearnersForEq
+      }
+    }
+
+    // output weights: default to '1' for any missing equation weight
+    const nextOutputWeights = { ...(wizardState.outputWeights || {}) }
+    for (const eq of equations) {
+      if (nextOutputWeights[eq.type] === undefined) nextOutputWeights[eq.type] = '1'
+    }
+
+    // output losses: default per-output-node per-wire based on one-hot flag
+    const nextOutputLosses = { ...(wizardState.outputLosses || {}) }
+    for (const eq of equations) {
+      if (!nextOutputLosses[eq.type]) {
+        const lhsDiagram = diagramsSection?.items?.find((d) => d.type === eq['lhs-type'])
+        const outputNodes = (lhsDiagram?.nodes || []).filter((n) => {
+          const boxDef = boxesSection?.items?.find((b) => b.type === n.data?.type)
+          return boxDef?.kind === 'output'
+        })
+        const perNode = {}
+        for (const node of outputNodes) {
+          const boxDef = boxesSection?.items?.find((b) => b.type === node.data?.type) || {}
+          const inputs = boxDef.inputs || []
+          const nodeType = boxDef.type || node.data?.type
+          const prevEq = wizardState.outputLosses?.[eq.type] || {}
+          const prevNode = prevEq?.[nodeType] || {}
+          const nodeMap = {}
+          for (let idx = 0; idx < inputs.length; idx++) {
+            const wireType = inputs[idx]
+            const indexKey = idx
+            if (prevNode && Object.prototype.hasOwnProperty.call(prevNode, indexKey)) nodeMap[indexKey] = prevNode[indexKey]
+            else nodeMap[indexKey] = (nextWireOneHot?.[wireType] ? 'CE' : 'L2')
+          }
+          perNode[nodeType] = nodeMap
+        }
+        nextOutputLosses[eq.type] = perNode
+      }
+    }
+
+    // prune removed keys
+    for (const k of Object.keys(wizardState.outputLearners || {})) {
+      if (!equations.find((e) => e.type === k)) delete nextOutputLearners[k]
+    }
+    for (const k of Object.keys(wizardState.outputWeights || {})) {
+      if (!equations.find((e) => e.type === k)) delete nextOutputWeights[k]
+    }
+    for (const k of Object.keys(wizardState.outputLosses || {})) {
+      if (!equations.find((e) => e.type === k)) delete nextOutputLosses[k]
+    }
+
     // prune removed keys
     for (const k of Object.keys(wizardState.wireDims || {})) {
       if (!wires.find((w) => w.type === k)) {
@@ -84,11 +151,14 @@ export default function GenerateCodeDialog({ open, onClose }) {
     const changed = JSON.stringify(nextWireDims) !== JSON.stringify(wizardState.wireDims) ||
       JSON.stringify(nextWireSelects) !== JSON.stringify(wizardState.wireSelects) ||
       JSON.stringify(nextWireOneHot) !== JSON.stringify(wizardState.wireOneHot) ||
-      JSON.stringify(nextLearnerConfigs) !== JSON.stringify(wizardState.learnerConfigs)
+      JSON.stringify(nextLearnerConfigs) !== JSON.stringify(wizardState.learnerConfigs) ||
+      JSON.stringify(nextOutputLearners) !== JSON.stringify(wizardState.outputLearners) ||
+      JSON.stringify(nextOutputWeights) !== JSON.stringify(wizardState.outputWeights) ||
+      JSON.stringify(nextOutputLosses) !== JSON.stringify(wizardState.outputLosses)
     if (changed) {
-      setWizardState((s) => ({ ...s, wireDims: nextWireDims, wireSelects: nextWireSelects, wireOneHot: nextWireOneHot, learnerConfigs: nextLearnerConfigs }))
+      setWizardState((s) => ({ ...s, wireDims: nextWireDims, wireSelects: nextWireSelects, wireOneHot: nextWireOneHot, learnerConfigs: nextLearnerConfigs, outputLearners: nextOutputLearners, outputWeights: nextOutputWeights, outputLosses: nextOutputLosses }))
     }
-  }, [wires, learners, wizardState])
+  }, [wires, learners, wizardState, equations, sections])
 
   // no localStorage persistence for wizardState
 
@@ -221,6 +291,7 @@ export default function GenerateCodeDialog({ open, onClose }) {
             {activeStep === 4 && (
               <FinishStep
                 wizardState={wizardState}
+                sections={sections}
               />
             )}
           </Box>

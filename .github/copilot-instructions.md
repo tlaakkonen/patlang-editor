@@ -130,6 +130,7 @@ Diagram management
 - When changing components or behavior, the main places to edit are `PaletteContext.jsx`, `Canvas.jsx`, `CustomNode.jsx`, and the Sidebar files
 - If you add dependencies, update `package.json` and run `npm install`
 - To validate coding style, run the linter as needed; a build is not required to verify code edits
+ - IMPORTANT: When you run the linter after making edits, only fix lint errors that are directly related to the files you have just patched. Do NOT fix unrelated lint or style issues in other files. This rule is VERY IMPORTANT to avoid unexpected wide-ranging changes.
 
 ## Notes / limitations
 - No automated tests or CI configured
