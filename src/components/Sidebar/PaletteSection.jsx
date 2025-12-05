@@ -287,6 +287,7 @@ export default function PaletteSection({ title, items = [], folders = [], sectio
 
   return (
     <List
+      id={`palette-${sectionKey}`}
       component="nav"
       dense
       disablePadding

@@ -73,6 +73,7 @@ export default function TopMenu() {
   return (
     <>
       <Paper
+        id="top-menu"
         elevation={0}
         square
         sx={{
@@ -101,6 +102,7 @@ export default function TopMenu() {
             </Stack>
             <Stack direction="row" spacing={1.5} alignItems="center">
               <Button
+                id="darkmode-button"
                 size="small"
                 variant="outlined"
                 color="primary"
@@ -118,13 +120,14 @@ export default function TopMenu() {
                 Dark Mode
               </Button>
 
-              <Button size="small" variant="outlined" startIcon={<SaveIcon />} onClick={handleSave}>
+              <Button id="save-button" size="small" variant="outlined" startIcon={<SaveIcon />} onClick={handleSave}>
                 Save
               </Button>
-              <Button size="small" variant="outlined" startIcon={<UploadFileIcon />} onClick={handleLoad}>
+              <Button id="load-button" size="small" variant="outlined" startIcon={<UploadFileIcon />} onClick={handleLoad}>
                 Load
               </Button>
               <Button
+                id="clear-button"
                 size="small"
                 variant="outlined"
                 color="error"
@@ -133,10 +136,11 @@ export default function TopMenu() {
               >
                 Clear
               </Button>
-              <Button size="small" variant="contained" startIcon={<CodeIcon />} onClick={handleGenerate}>
+              <Button id="generate-button" size="small" variant="contained" startIcon={<CodeIcon />} onClick={handleGenerate}>
                 Generate Code
               </Button>
               <Button
+                id="train-button"
                 size="small"
                 variant="contained"
                 color="warning"

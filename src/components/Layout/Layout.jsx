@@ -1,6 +1,7 @@
 import React from 'react'
 import Box from '@mui/material/Box'
 import TopMenu from './TopMenu'
+import Tour from './Tour'
 
 export default function Layout({ sidebar, children }) {
   const MIN_WIDTH = 300
@@ -52,11 +53,14 @@ export default function Layout({ sidebar, children }) {
         }}
       >
         <TopMenu />
+        {/* New user tour overlays on first visit */}
+        <Tour />
       </Box>
 
       <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
         <Box
           component="aside"
+          id="app-sidebar"
           sx={{
             width: sidebarWidth,
             borderRight: 1,
@@ -82,6 +86,7 @@ export default function Layout({ sidebar, children }) {
         />
         <Box
           component="main"
+          id="app-main"
           sx={{ flex: 1, p: 2, bgcolor: 'background.default', overflow: 'hidden' }}
         >
           {children}

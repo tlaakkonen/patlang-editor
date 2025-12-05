@@ -589,7 +589,7 @@ export default function Canvas() {
     }, [edges, findItemByType, nodes, pushHistory, setEdges, setNodes, setSections])
 
     return (
-        <div ref={reactFlowWrapper} style={{ width: '100%', height: '100%', position: 'relative' }} onDragOver={onDragOver} onDrop={onDrop}>
+        <div id="app-canvas" ref={reactFlowWrapper} style={{ width: '100%', height: '100%', position: 'relative' }} onDragOver={onDragOver} onDrop={onDrop}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}

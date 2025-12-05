@@ -16,6 +16,8 @@ export default function ClearDialog({ open, onClose, onConfirm }) {
     // default behavior: remove local storage key, delete MNIST from IndexedDB and reload
     try {
       localStorage.removeItem('patlang:v1')
+      // also clear the onboarding tour flag
+      localStorage.removeItem('patlang:tour:v1')
     } catch {
       // ignore
     }
