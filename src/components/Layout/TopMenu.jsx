@@ -82,7 +82,23 @@ export default function TopMenu() {
         }}
       >
         <Box sx={{ width: '100%', mx: 'auto' }}>
-          <Stack direction="row" alignItems="center" justifyContent="flex-end">
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            {/* Left: App logo from public/logo.svg, tinted via currentColor using CSS mask */}
+            <Stack direction="row" alignItems="center" spacing={1.25}>
+              <Box
+                aria-label="App logo"
+                sx={{
+                  width: 28,
+                  height: 28,
+                  bgcolor: 'text.primary',
+                  // Use mask so the logo follows current text color (light in dark mode, dark in light mode)
+                  mask: 'url("./logo.svg") no-repeat center',
+                  WebkitMask: 'url("./logo.svg") no-repeat center',
+                  maskSize: 'contain',
+                  WebkitMaskSize: 'contain',
+                }}
+              />
+            </Stack>
             <Stack direction="row" spacing={1.5} alignItems="center">
               <Button
                 size="small"
